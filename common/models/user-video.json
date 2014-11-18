@@ -1,0 +1,19 @@
+{
+  "name": "UserVideo",
+  "plural": "UserVideos",
+  "base": "Model",
+  "properties": {
+    "appliance": {
+      "type": "string",
+      "required": true
+    },
+    "kitchenPhoto": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": []
+}
