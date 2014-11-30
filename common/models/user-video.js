@@ -14,7 +14,7 @@ module.exports = function(UserVideo) {
 		
 		var imageName = photoName + uuid.v4()
 		var loopedImageName =  imageName + ".mp4";
-		
+		console.log("start resize");
 		var resizeImageStart = now();
 		gm('./client/sourceFiles/kitchen2.JPG')
 			.resize(640, 480)
