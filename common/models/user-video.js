@@ -40,8 +40,6 @@ module.exports = function(UserVideo) {
 				}
 				else
 				{
-					throw err;
-					console.log(err);
 					cb(null, err);
 				}
 		
@@ -76,7 +74,7 @@ function createUserVideo(loopedImageName, cb)
 	var vHeight = 470;
 	
 	var savedImageName = uuid.v4() + ".mp4";
-	ffmpeg('./client/generatedVideos/' + loopedImageName).mergeAdd(maytagAudioFile).addOption(['-vf', 'movie='+maytagOverlayFile+ ' [watermark]; [in] [watermark] overlay=shortest=1:x='+xCoord+':y='+yCoord+' [out]']).outputOptions('-metadata', 'title=Bring Maytag Home').save('./client/generatedVideos/' + savedImageName).on('end', 
+	ffmpeg('./client/generatedVideos/' + loopedImageName).mergeAdd(maytagAudioFile).addOption(['-vf', 'movie='+maytagOverlayFile+ ' [watermark]; [in] [watermark] overlay=shortest=1:x='+xCoord+':y='+yCoord+' [out]']).size('640x480').outputOptions('-metadata', 'title=Bring Maytag Home').save('./client/generatedVideos/' + savedImageName).on('end', 
 	function(){
 		var userVideoEnd = now();
 		console.log(loopedImageName + " render time:" + (userVideoEnd-userVideoStart).toFixed(3)); 
