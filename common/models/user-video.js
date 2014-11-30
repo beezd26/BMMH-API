@@ -3,7 +3,6 @@ var ffmpeg = require('fluent-ffmpeg'),
 	child_process = require('child_process'),
 	uuid = require('node-uuid'),
 	now = require("performance-now"),
-	gm = require('gm'),
 	AWS = require('aws-sdk');
 
 module.exports = function(UserVideo) {
