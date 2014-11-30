@@ -38,6 +38,10 @@ module.exports = function(UserVideo) {
 							createUserVideo(loopedImageName, cb);
 					});
 				}
+				else
+				{
+					cb(null, err);
+				}
 		
 		});
 		
