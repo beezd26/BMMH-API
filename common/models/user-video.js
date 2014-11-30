@@ -9,13 +9,12 @@ var ffmpeg = require('fluent-ffmpeg'),
 module.exports = function(UserVideo) {
 	UserVideo.generate = function(photoName, cb) {
 		var methodStart = now();
-		var userImageFile = "./client/sourceFiles/kitchen2.JPG";
+		var userImageFile = "./client/sourceFiles/mykitchen.JPG";
 		
 		var imageName = photoName + uuid.v4()
 		var loopedImageName =  imageName + ".mp4";
-		console.log("start resize");
 		var resizeImageStart = now();
-		gm('./client/sourceFiles/kitchen2.JPG')
+		gm(userImageFile)
 			.resize(640, 480)
 			.autoOrient()
 			.noProfile()
@@ -30,10 +29,10 @@ module.exports = function(UserVideo) {
 							var loopImageEnd = now();
 							console.log(photoName + " looped image time:" + (loopImageEnd-loopImageStart).toFixed(3));
 
-							fs.unlink('./client/generatedVideos/' + imageName + '.JPG', function (err) {
+							/*fs.unlink('./client/generatedVideos/' + imageName + '.JPG', function (err) {
 								if (err)
 									console.log(err);
-							});
+							});*/
 
 							createUserVideo(loopedImageName, cb);
 					});
