@@ -3,22 +3,46 @@ var ffmpeg = require('fluent-ffmpeg'),
 	child_process = require('child_process'),
 	uuid = require('node-uuid'),
 	now = require("performance-now"),
+	im = require('imagemagick'),
+	gm = require('gm'),
 	AWS = require('aws-sdk');
 
 module.exports = function(UserVideo) {
 	UserVideo.generate = function(photoName, cb) {
 		var methodStart = now();
-		var userImageFile = "./client/sourceFiles/kitchen_8.jpg";
+		var userImageFile = "./client/sourceFiles/kitchen2.JPG";
 		
-		var loopedImageName = photoName + uuid.v4() + ".mp4";
+		var imageName = photoName + uuid.v4()
+		var loopedImageName =  imageName + ".mp4";
 		
-		var loopImageStart = now();
-		ffmpeg(userImageFile).loop(30).addInput(userImageFile).addOptions(['-c:v libx264', '-c:a aac', '-strict experimental', '-t 30', '-pix_fmt yuv420p']).save('./client/generatedVideos/' + loopedImageName).on('end', 
-			function(){
-				var loopImageEnd = now();
-				console.log(photoName + " looped image time:" + (loopImageEnd-loopImageStart).toFixed(3));
-				createUserVideo(loopedImageName, cb);
-			});
+		var resizeImageStart = now();
+		gm('./client/sourceFiles/kitchen2.JPG')
+			.resize(640, 480)
+			.autoOrient()
+			.noProfile()
+			.write('./client/generatedVideos/' + imageName + '.JPG', function (err) {
+		  		if (!err)
+				{
+					var resizeImageEnd = now();
+					console.log(photoName + " resize image time:" + (resizeImageEnd-resizeImageStart).toFixed(3));
+					var loopImageStart = now();
+					ffmpeg('./client/generatedVideos/' + imageName + '.JPG').loop(15).addOptions(['-c:v libx264', '-c:a aac', '-strict experimental', '-pix_fmt yuv420p']).size('640x480').save('./client/generatedVideos/' + loopedImageName).on('end', 
+						function(){
+							var loopImageEnd = now();
+							console.log(photoName + " looped image time:" + (loopImageEnd-loopImageStart).toFixed(3));
+
+							fs.unlink('./client/generatedVideos/' + imageName + '.JPG', function (err) {
+								if (err)
+									console.log(err);
+							});
+
+							createUserVideo(loopedImageName, cb);
+					});
+				}
+		
+		});
+		
+		
 
 		//exec('ffmpeg -loop 1 -i '+userImageFile+' -c:v libx264 -c:a aac -strict experimental -t 30 -pix_fmt yuv420p '+ loopedImageName +';',function(){
 			//var newVideo = loopedImageName;
@@ -40,17 +64,21 @@ function createUserVideo(loopedImageName, cb)
 {
 	var userVideoStart = now();
 	var maytagAudioFile = "./client/sourceFiles/audio.aif";
-	var maytagOverlayFile = "./client/sourceFiles/frankerberry_countchockula.mp4";
-	var xCoord = 300;
-	var yCoord = 200;
+	var maytagOverlayFile = "./client/sourceFiles/man.mp4";
+	var xCoord = 180;
+	var yCoord = 30;
 	var vWidth = 270;
 	var vHeight = 470;
 	
 	var savedImageName = uuid.v4() + ".mp4";
-	ffmpeg('./client/generatedVideos/' + loopedImageName).mergeAdd(maytagAudioFile).mergeAdd('./client/generatedVideos/' + loopedImageName).addOption(['-vf', 'movie='+maytagOverlayFile+ ' [watermark]; [in] [watermark] overlay=shortest=1:x='+xCoord+':y='+yCoord+' [out]']).outputOptions('-metadata', 'title=Bring Maytag Home').save('./client/generatedVideos/' + savedImageName).on('end', 
+	ffmpeg('./client/generatedVideos/' + loopedImageName).mergeAdd(maytagAudioFile).addOption(['-vf', 'movie='+maytagOverlayFile+ ' [watermark]; [in] [watermark] overlay=shortest=1:x='+xCoord+':y='+yCoord+' [out]']).outputOptions('-metadata', 'title=Bring Maytag Home').save('./client/generatedVideos/' + savedImageName).on('end', 
 	function(){
 		var userVideoEnd = now();
 		console.log(loopedImageName + " render time:" + (userVideoEnd-userVideoStart).toFixed(3)); 
+		/*fs.unlink('./client/generatedVideos/' + loopedImageName, function (err) {
+			if (err)
+				console.log(err);
+		});*/
 		uploadFile(savedImageName, cb);
 	});
 }
