@@ -40,6 +40,8 @@ module.exports = function(UserVideo) {
 				}
 				else
 				{
+					throw err;
+					console.log(err);
 					cb(null, err);
 				}
 		
