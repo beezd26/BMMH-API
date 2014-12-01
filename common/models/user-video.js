@@ -9,7 +9,7 @@ var ffmpeg = require('fluent-ffmpeg'),
 module.exports = function(UserVideo) {
 	UserVideo.generate = function(photoName, cb) {
 		var methodStart = now();
-		var userImageFile = "./client/sourceFiles/mykitchen.JPG";
+		var userImageFile = "./client/sourceFiles/kitchen2.JPG";
 		
 		var imageName = photoName + uuid.v4()
 		var loopedImageName =  imageName + ".mp4";
