@@ -75,7 +75,7 @@ angular.module('app', ['angularFileUpload'])
 	  $(".render span").text(response.msg.render);	
 	  $(".s3 span").text(response.msg.S3);	
 	  $(".url span").text(response.msg.url);
-	  $(".msg span").text(response.msg);
+	  $(".msg").text(response.msg);
       console.info('Complete', xhr, item, response);
     });
 
