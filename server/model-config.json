@@ -29,5 +29,9 @@
   "UserVideo": {
     "dataSource": null,
     "public": true
+  },
+  "container": {
+    "dataSource": "storage",
+    "public": true
   }
 }

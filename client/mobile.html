@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html id="ng-app" ng-app="app"> <!-- id="ng-app" IE<8 -->
+
+<head>
+    <title>Video Render Upload Testing</title>
+    <link rel="stylesheet" href="js/bootstrap.min.css"/>
+
+    <script src="js/jquery-1.8.3.min.js"></script>
+
+    <script src="js/bootstrap.min.js"></script>
+
+    <!--<script src="../bower_components/angular/angular.js"></script>-->
+    <script src="js/angular.min.js"></script>
+    <script src="js/angular-file-upload.js"></script>
+    <script src="js/controllers.js"></script>
+
+    <style>
+        .my-drop-zone {
+            border: dotted 3px lightgray;
+        }
+
+        .ng-file-over {
+            border: dotted 3px red;
+        }
+
+        /* Default class applied to drop zones on over */
+        .another-file-over-class {
+            border: dotted 3px green;
+        }
+
+        html, body {
+            height: 100%;
+        }
+    </style>
+
+</head>
+
+<!-- 1. ng-file-drop | ng-file-drop="options" -->
+<body ng-controller="TestController" ng-file-drop>
+
+<div class="container">
+
+    <div class="row">
+
+        <div>
+
+            <h3>Select files</h3>
+			Single
+            <input ng-file-select type="file"/>
+
+        </div>
+
+    </div>
+	<div class="row">
+		<div>
+
+            <h3>Upload File:</h3>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th width="50%">Name</th>
+                    <th ng-show="uploader.isHTML5">Size</th>
+                    <th ng-show="uploader.isHTML5">Progress</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="item in uploader.queue">
+                    <td><strong>{{ item.file.name }}</strong></td>
+                    <td ng-show="uploader.isHTML5" nowrap>{{
+                        item.file.size/1024/1024|number:2 }} MB
+                    </td>
+                    <td ng-show="uploader.isHTML5">
+                        <div class="progress" style="margin-bottom: 0;">
+                            <div class="progress-bar" role="progressbar"
+                                 ng-style="{ 'width': item.progress + '%' }"></div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div>
+                <p>
+                    Queue progress:
+
+                <div class="progress" style="">
+                    <div class="progress-bar" role="progressbar"
+                         ng-style="{ 'width': uploader.progress + '%' }"></div>
+                </div>
+                </p>
+                <button type="button" class="btn btn-success btn-s"
+                        ng-click="uploader.uploadAll()"
+                        ng-disabled="!uploader.getNotUploadedItems().length">
+                    <span class="glyphicon glyphicon-upload"></span> Upload all
+                </button>
+                <button type="button" class="btn btn-warning btn-s"
+                        ng-click="uploader.cancelAll()"
+                        ng-disabled="!uploader.isUploading">
+                    <span class="glyphicon glyphicon-ban-circle"></span> Cancel
+                    all
+                </button>
+                <button type="button" class="btn btn-danger btn-s"
+                        ng-click="uploader.clearQueue()"
+                        ng-disabled="!uploader.queue.length">
+                    <span class="glyphicon glyphicon-trash"></span> Remove all
+                </button>
+            </div>
+
+        </div>
+	</div>
+	<div class="row">
+		<h3>Request Info</h3>
+		<div class="request-time"></div>
+		<div class="name">
+			Name: <span></span>		
+		</div>
+		<div class="size">
+			Size: <span></span>
+		</div>
+		<div class="upload">
+			Upload: <span></span>
+		</div>
+		<div class="resize">
+			Resize: <span></span>
+		</div>
+		<div class="looped">
+			Looped: <span></span>
+		</div>
+		<div class="render">
+			Render: <span></span>
+		</div>
+		<div class="s3">
+			S3: <span></span>
+		</div>
+		<div class="url">
+			URL: <span></span>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>
+
