@@ -9,6 +9,7 @@ var ffmpeg = require('fluent-ffmpeg'),
 	AWS = require('aws-sdk');
 
 module.exports = function(UserVideo) {
+	//no image upload - image exists on server for server without network latency performance tests.
 	UserVideo.generate = function(photoName, cb) {
 		var performance = {
 			"name": photoName,
@@ -24,6 +25,7 @@ module.exports = function(UserVideo) {
 		createLoopedVideo(photoName, performance, cb);
 	};
 	
+	//image upload takes multipart form data
 	UserVideo.uploadAndGenerate = function(req, res, cb) {
 		var performance = {
 			"name": null,
@@ -36,6 +38,8 @@ module.exports = function(UserVideo) {
 			"url":null
 		};
 		var fileUploadStart = now();
+		
+		//parse multipart form data
 		var form = new formidable.IncomingForm();
 		form.parse(req, function(err, fields, files) {
 			var old_path = files.file.path,
@@ -48,6 +52,8 @@ module.exports = function(UserVideo) {
 			console.log(file_name + " received: " + (files.file.size/1000000) + "MB");
 			performance.name = file_name;
 			performance.size = (files.file.size/1000000) + "MB";
+			
+			//save image to disk
 			fs.readFile(old_path, function(err, data) {
 				fs.writeFile(new_path, data, function(err) {
 					fs.unlink(old_path, function(err) {
@@ -90,6 +96,8 @@ function createLoopedVideo(fileName, performance, cb)
 {		
 	var loopedImageName =  fileName + ".mp4";
 	var resizeImageStart = now();
+	
+	//resize user image
 	gm("./client/storage/kitchenImages/" + fileName + ".jpg")
 		.resize(640, 480)
 		.autoOrient()
@@ -101,6 +109,8 @@ function createLoopedVideo(fileName, performance, cb)
 				console.log(fileName + " resize image time:" + (resizeImageEnd-resizeImageStart).toFixed(3));
 				performance.resize = (resizeImageEnd-resizeImageStart).toFixed(3);
 				var loopImageStart = now();
+				
+				//create looped image of users kitchen
 				ffmpeg('./client/generatedVideos/' + fileName + '.jpg').loop(15).addOptions(['-c:v libx264', '-c:a aac', '-strict experimental', '-pix_fmt yuv420p']).size('640x480').save('./client/generatedVideos/loopedVideo/' + loopedImageName).on('end', 
 					function(){
 						var loopImageEnd = now();
@@ -133,6 +143,8 @@ function createUserVideo(loopedImageName, performance, cb)
 	var vHeight = 470;
 	
 	var savedImageName = loopedImageName;
+	
+	//create rendered compisite video of Maytag Man and user kitchen
 	ffmpeg('./client/generatedVideos/loopedVideo/' + loopedImageName).mergeAdd(maytagAudioFile).addOption(['-vf', 'movie='+maytagOverlayFile+ ' [watermark]; [in] [watermark] overlay=shortest=1:x='+xCoord+':y='+yCoord+' [out]']).size('640x480').outputOptions('-metadata', 'title=Bring Maytag Home').save('./client/generatedVideos/' + savedImageName).on('end', 
 	function(){
 		var userVideoEnd = now();
@@ -152,6 +164,7 @@ function uploadFile(savedImageName, performance, cb) {
   	var metaData = getContentTypeByFile('./client/generatedVideos/' + savedImageName);
   	var s3 = new AWS.S3();
 
+	//save file to AWS S3
   	s3.putObject({
     	ACL: 'public-read',
     	Bucket: "bmmh-testing",
