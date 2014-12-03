@@ -99,7 +99,7 @@ function createLoopedVideo(fileName, performance, cb)
 	
 	//resize user image
 	gm("./client/storage/kitchenImages/" + fileName + ".jpg")
-		.resize(640, 480)
+		.resize(640, 480, "!")
 		.autoOrient()
 		.noProfile()
 		.write('./client/generatedVideos/' + fileName + '.jpg', function (err) {
