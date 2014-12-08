@@ -23,7 +23,6 @@
     "performance-now": "^0.2.0",
     "serve-favicon": "^2.0.1",
     "string_decoder": "^0.10.31"
-	"strongloop":
   },
   "optionalDependencies": {
     "loopback-explorer": "^1.1.0"
