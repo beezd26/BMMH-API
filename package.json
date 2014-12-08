@@ -1,7 +1,7 @@
 {
   "name": "BMMH-API",
   "version": "0.0.0",
-  "main": "",
+  "main": "server/server.js",
   "scripts": {
     "start": "slc run --cluster cpus",
     "pretest": "jshint ."
