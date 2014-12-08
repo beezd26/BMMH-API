@@ -1,4 +1,3 @@
-//test change
 var ffmpeg = require('fluent-ffmpeg'),
 	fs = require('fs'),
 	child_process = require('child_process'),
