@@ -176,7 +176,7 @@ function uploadFile(savedImageName, performance, cb) {
 		console.log(savedImageName + " upload time:" + (uploadEnd-uploadStart).toFixed(3));
 		performance.S3 = (uploadEnd-uploadStart).toFixed(3);
 		performance.url = 'https://s3-us-west-2.amazonaws.com/bmmh-testing/' + savedImageName;
-		cb(null,performance);
+		cb(201,performance);
   	});
 }
 
