@@ -111,7 +111,7 @@ function createLoopedVideo(fileName, performance, cb)
 				var loopImageStart = now();
 				
 				//create looped image of users kitchen
-				ffmpeg('./client/generatedVideos/' + fileName + '.jpg').loop(15).addOptions(['-c:v libx264', '-c:a aac', '-strict experimental', '-pix_fmt yuv420p', '-preset ultrafast']).size('640x480').save('./client/generatedVideos/loopedVideo/' + loopedImageName).on('end', 
+				ffmpeg('./client/generatedVideos/' + fileName + '.jpg').loop(15).addOptions(['-c:v libx264', '-c:a aac', '-strict experimental', '-pix_fmt yuv420p', '-preset ultrafast', '-tune stillimage']).size('640x480').save('./client/generatedVideos/loopedVideo/' + loopedImageName).on('end', 
 					function(){
 						var loopImageEnd = now();
 						console.log(fileName + " looped image time:" + (loopImageEnd-loopImageStart).toFixed(3));
