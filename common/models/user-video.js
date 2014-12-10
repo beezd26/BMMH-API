@@ -111,7 +111,7 @@ function createLoopedVideo(fileName, performance, cb)
 				var loopImageStart = now();
 				
 				//create looped image of users kitchen
-				ffmpeg('./client/generatedVideos/' + fileName + '.jpg').loop(15).addOptions(['-c:v libx264', '-c:a aac', '-strict experimental', '-pix_fmt yuv420p', '-threads 1']).size('640x480').save('./client/generatedVideos/loopedVideo/' + loopedImageName).on('end', 
+				ffmpeg('./client/generatedVideos/' + fileName + '.jpg').loop(15).addOptions(['-c:v libx264', '-c:a aac', '-strict experimental', '-pix_fmt yuv420p', '-preset ultrafast']).size('640x480').save('./client/generatedVideos/loopedVideo/' + loopedImageName).on('end', 
 					function(){
 						var loopImageEnd = now();
 						console.log(fileName + " looped image time:" + (loopImageEnd-loopImageStart).toFixed(3));
@@ -145,7 +145,7 @@ function createUserVideo(loopedImageName, performance, cb)
 	var savedImageName = loopedImageName;
 	
 	//create rendered compisite video of Maytag Man and user kitchen
-	ffmpeg('./client/generatedVideos/loopedVideo/' + loopedImageName).mergeAdd(maytagAudioFile).addOption(['-vf', 'movie='+maytagOverlayFile+ ' [watermark]; [in] [watermark] overlay=shortest=1:x='+xCoord+':y='+yCoord+' [out]', '-threads 1']).size('640x480').outputOptions('-metadata', 'title=Bring Maytag Home').save('./client/generatedVideos/' + savedImageName).on('end', 
+	ffmpeg('./client/generatedVideos/loopedVideo/' + loopedImageName).mergeAdd(maytagAudioFile).addOption(['-vf', 'movie='+maytagOverlayFile+ ' [watermark]; [in] [watermark] overlay=shortest=1:x='+xCoord+':y='+yCoord+' [out]', '-preset ultrafast']).size('640x480').outputOptions('-metadata', 'title=Bring Maytag Home').save('./client/generatedVideos/' + savedImageName).on('end', 
 	function(){
 		var userVideoEnd = now();
 		console.log(loopedImageName + " render time:" + (userVideoEnd-userVideoStart).toFixed(3)); 
