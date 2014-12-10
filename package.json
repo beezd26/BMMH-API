@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "main": "server/server.js",
   "scripts": {
-    "start": "slc run --cluster cpus",
+    "start": "slc run --cluster 2",
     "pretest": "jshint ."
   },
   "dependencies": {
