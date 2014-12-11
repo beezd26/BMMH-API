@@ -23,7 +23,7 @@ module.exports = function(UserVideo) {
 			"url":null
 		};
 		console.log("-------------------------------------");
-		createLoopedVideo(photoName, performance, cb);
+		createResizedImage(photoName, performance, cb);
 	};
 	
 	//image upload takes multipart form data
@@ -67,7 +67,7 @@ module.exports = function(UserVideo) {
 							var fileUploadFinish = now();
 							console.log(file_name + '.' + file_ext + " upload image time:" + (fileUploadFinish-fileUploadStart).toFixed(3));
 							performance.upload = (fileUploadFinish-fileUploadStart).toFixed(3);
-							createLoopedVideo(file_name, performance, cb)
+							createResizedImage(file_name, performance, cb)
 						}
 				    });
 				});
@@ -93,7 +93,7 @@ module.exports = function(UserVideo) {
 	    );
 };
 
-function createLoopedVideo(fileName, performance, cb)
+function createResizedImage(fileName, performance, cb)
 {		
 	var loopedImageName =  fileName + ".mp4";
 	var resizeImageStart = now();
@@ -105,21 +105,7 @@ function createLoopedVideo(fileName, performance, cb)
 			var resizeImageEnd = now();
 			console.log(fileName + " resize image time:" + (resizeImageEnd-resizeImageStart).toFixed(3));
 			performance.resize = (resizeImageEnd-resizeImageStart).toFixed(3);
-			var loopImageStart = now();
-			
-			//create looped image of users kitchen
-			ffmpeg('./client/generatedVideos/' + fileName + '.jpg').loop(15).addOptions(['-c:v libx264', '-strict experimental', '-pix_fmt yuv420p', '-preset ultrafast', '-crf 25']).size('640x480').save('./client/generatedVideos/loopedVideo/' + loopedImageName).on('end', 
-				function(){
-					var loopImageEnd = now();
-					console.log(fileName + " looped image time:" + (loopImageEnd-loopImageStart).toFixed(3));
-					performance.looped = (loopImageEnd-loopImageStart).toFixed(3);
-					/*fs.unlink('./client/generatedVideos/' + imageName + '.JPG', function (err) {
-						if (err)
-							console.log(err);
-					});*/
-
-					createUserVideo(loopedImageName, performance, cb);
-			});
+			createUserVideo(fileName, performance, cb);
 		}
 		else
 		{
@@ -128,7 +114,7 @@ function createLoopedVideo(fileName, performance, cb)
 	});
 }
 
-function createUserVideo(loopedImageName, performance, cb)
+function createUserVideo(fileName, performance, cb)
 {
 	var userVideoStart = now();
 	var maytagAudioFile = "./client/sourceFiles/audio.aif";
@@ -138,20 +124,19 @@ function createUserVideo(loopedImageName, performance, cb)
 	var vWidth = 270;
 	var vHeight = 470;
 	
-	var savedImageName = loopedImageName;
-	
-	//create rendered compisite video of Maytag Man and user kitchen
-	ffmpeg('./client/generatedVideos/loopedVideo/' + loopedImageName).mergeAdd(maytagAudioFile).addOption(['-vf', 'movie='+maytagOverlayFile+ ' [watermark]; [in] [watermark] overlay=shortest=1:x='+xCoord+':y='+yCoord+' [out]', '-preset ultrafast','-crf 25']).size('640x480').outputOptions('-metadata', 'title=Bring Maytag Home').save('./client/generatedVideos/' + savedImageName).on('end', 
+	var savedImageName = fileName + '.mp4';
+	ffmpeg('./client/generatedVideos/' + fileName + '.jpg').loop(15).mergeAdd(maytagAudioFile).addOption(['-c:v libx264', '-vf', 'movie='+maytagOverlayFile+ ' [watermark]; [in] [watermark] overlay=shortest=1:x='+xCoord+':y='+yCoord+' [out]', '-preset ultrafast','-crf 25', '-pix_fmt yuv420p']).size('640x480').outputOptions('-metadata', 'title=Bring Maytag Home').save('./client/generatedVideos/' + savedImageName).on('end', 
 	function(){
 		var userVideoEnd = now();
-		console.log(loopedImageName + " render time:" + (userVideoEnd-userVideoStart).toFixed(3)); 
+		console.log(fileName + " render time:" + (userVideoEnd-userVideoStart).toFixed(3)); 
 		performance.render = (userVideoEnd-userVideoStart).toFixed(3);
-		/*fs.unlink('./client/generatedVideos/' + loopedImageName, function (err) {
+		/*fs.unlink('./client/generatedVideos/' + fileName + '.jpg', function (err) {
 			if (err)
 				console.log(err);
 		});*/
 		uploadFile(savedImageName, performance, cb);
 	});
+	
 }
 
 function uploadFile(savedImageName, performance, cb) {
