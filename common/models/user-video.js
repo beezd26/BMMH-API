@@ -4,7 +4,6 @@ var ffmpeg = require('fluent-ffmpeg'),
 	uuid = require('node-uuid'),
 	formidable = require('formidable'),
 	now = require("performance-now"),
-	gm = require('gm'),
 	util = require('util'),
 	sharp = require('sharp'),
 	AWS = require('aws-sdk');
