@@ -11,6 +11,7 @@ var ffmpeg = require('fluent-ffmpeg'),
 module.exports = function(UserVideo) {
 	//no image upload - image exists on server for server without network latency performance tests.
 	UserVideo.generate = function(photoName, cb) {
+		
 		var performance = {
 			"name": photoName,
 			"size": null,
