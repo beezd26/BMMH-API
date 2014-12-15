@@ -51,8 +51,6 @@ module.exports = function(UserVideo) {
 			    file_name = uuid.v4(),
 			    new_path =  "./client/storage/kitchenImages/" +  file_name + '.' + file_ext;
 			
-			console.log("-------------------------------------");
-			console.log(file_name + " received: " + (files.file.size/1000000) + "MB");
 			performance.name = file_name;
 			performance.size = (files.file.size/1000000) + "MB";
 			
@@ -67,7 +65,6 @@ module.exports = function(UserVideo) {
 						else
 						{
 							var fileUploadFinish = now();
-							console.log(file_name + '.' + file_ext + " upload image time:" + (fileUploadFinish-fileUploadStart).toFixed(3));
 							performance.upload = (fileUploadFinish-fileUploadStart).toFixed(3);
 							createResizedImage(file_name, performance, fullTime, cb)
 						}
@@ -105,7 +102,6 @@ function createResizedImage(fileName, performance, fullTime, cb)
 		if (!err)
 		{
 			var resizeImageEnd = now();
-			console.log(fileName + " resize image time:" + (resizeImageEnd-resizeImageStart).toFixed(3));
 			performance.resize = (resizeImageEnd-resizeImageStart).toFixed(3);
 			createUserVideo(fileName, performance,fullTime, cb);
 		}
@@ -130,7 +126,6 @@ function createUserVideo(fileName, performance, fullTime, cb)
 	ffmpeg('./client/generatedVideos/' + fileName + '.jpg').loop(15).mergeAdd(maytagAudioFile).addOption(['-c:v libx264', '-vf', 'movie='+maytagOverlayFile+ ' [watermark]; [in] [watermark] overlay=shortest=1:x='+xCoord+':y='+yCoord+' [out]', '-preset ultrafast','-crf 25', '-pix_fmt yuv420p']).size('640x480').outputOptions('-metadata', 'title=Bring Maytag Home').save('./client/generatedVideos/' + savedImageName).on('end', 
 	function(){
 		var userVideoEnd = now();
-		console.log(fileName + " render time:" + (userVideoEnd-userVideoStart).toFixed(3)); 
 		performance.render = (userVideoEnd-userVideoStart).toFixed(3);
 		/*fs.unlink('./client/generatedVideos/' + fileName + '.jpg', function (err) {
 			if (err)
@@ -157,11 +152,11 @@ function uploadFile(savedImageName, performance, fullTime, cb) {
   	}, function(error, response) {
 		var uploadEnd = now();
 		var fullTimeEnd = now();
-		console.log(savedImageName + " upload time:" + (uploadEnd-uploadStart).toFixed(3));
-		console.log(savedImageName + " full time:" + (fullTimeEnd-fullTime).toFixed(3));
 		performance.S3 = (uploadEnd-uploadStart).toFixed(3);
 		performance.fullTime = (fullTimeEnd-fullTime).toFixed(3);
 		performance.url = 'https://s3-us-west-2.amazonaws.com/bmmh-testing/' + savedImageName;
+		console.log(savedImageName + " performance:";
+		console.log(performence);
 		cb(null,performance);
   	});
 }
