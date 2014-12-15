@@ -19,7 +19,8 @@ module.exports = function(UserVideo) {
 			"looped": null,
 			"render": null,
 			"S3":null,
-			"url":null
+			"url":null,
+			"fullTime":null
 		};
 		console.log("-------------------------------------");
 		createResizedImage(photoName, performance, cb);
@@ -37,6 +38,7 @@ module.exports = function(UserVideo) {
 			"S3":null,
 			"url":null
 		};
+		var fullTime = now();
 		var fileUploadStart = now();
 		
 		//parse multipart form data
@@ -66,7 +68,7 @@ module.exports = function(UserVideo) {
 							var fileUploadFinish = now();
 							console.log(file_name + '.' + file_ext + " upload image time:" + (fileUploadFinish-fileUploadStart).toFixed(3));
 							performance.upload = (fileUploadFinish-fileUploadStart).toFixed(3);
-							createResizedImage(file_name, performance, cb)
+							createResizedImage(file_name, performance, fullTime, cb)
 						}
 				    });
 				});
@@ -92,7 +94,7 @@ module.exports = function(UserVideo) {
 	    );
 };
 
-function createResizedImage(fileName, performance, cb)
+function createResizedImage(fileName, performance, fullTime, cb)
 {		
 	var loopedImageName =  fileName + ".mp4";
 	var resizeImageStart = now();
@@ -104,7 +106,7 @@ function createResizedImage(fileName, performance, cb)
 			var resizeImageEnd = now();
 			console.log(fileName + " resize image time:" + (resizeImageEnd-resizeImageStart).toFixed(3));
 			performance.resize = (resizeImageEnd-resizeImageStart).toFixed(3);
-			createUserVideo(fileName, performance, cb);
+			createUserVideo(fileName, performance,fullTime, cb);
 		}
 		else
 		{
@@ -113,7 +115,7 @@ function createResizedImage(fileName, performance, cb)
 	});
 }
 
-function createUserVideo(fileName, performance, cb)
+function createUserVideo(fileName, performance, fullTime, cb)
 {
 	var userVideoStart = now();
 	var maytagAudioFile = "./client/sourceFiles/audio.aif";
@@ -133,12 +135,12 @@ function createUserVideo(fileName, performance, cb)
 			if (err)
 				console.log(err);
 		});*/
-		uploadFile(savedImageName, performance, cb);
+		uploadFile(savedImageName, performance, fullTime, cb);
 	});
 	
 }
 
-function uploadFile(savedImageName, performance, cb) {
+function uploadFile(savedImageName, performance, fullTime, cb) {
   	var uploadStart = now();
   	var fileBuffer = fs.readFileSync('./client/generatedVideos/' + savedImageName);
   	var metaData = getContentTypeByFile('./client/generatedVideos/' + savedImageName);
@@ -153,8 +155,11 @@ function uploadFile(savedImageName, performance, cb) {
     	ContentType: metaData
   	}, function(error, response) {
 		var uploadEnd = now();
+		var fullTimeEnd = now();
 		console.log(savedImageName + " upload time:" + (uploadEnd-uploadStart).toFixed(3));
+		console.log(savedImageName + " full time:" + (fullTimeEnd-fullTime).toFixed(3));
 		performance.S3 = (uploadEnd-uploadStart).toFixed(3);
+		performance.fullTime = (fullTimeEnd-fullTime).toFixed(3);
 		performance.url = 'https://s3-us-west-2.amazonaws.com/bmmh-testing/' + savedImageName;
 		cb(null,performance);
   	});
